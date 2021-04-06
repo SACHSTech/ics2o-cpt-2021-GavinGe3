@@ -1,6 +1,15 @@
 """
-Pygame Hardware Hangman
+-------------------------------------------------------------------------------
+Name:   Computer Ram Man.py
+Purpose:  A spin-off of Hangman in Pygame, with each wrong letter-guess resulting in a loss of one ram stick. 
+Words to be guessed will all be course-related and will have an accompanying description for the player.
+ 
+Author: Ge.G
+ 
+Created:  04.04.2021
+------------------------------------------------------------------------------
 """
+
 import pygame
 import random
 import math
@@ -19,13 +28,9 @@ titleFont = pygame.font.SysFont('comicsans', 85, True, False)
 font = pygame.font.SysFont('comicsans', 45, True, False)
 buttonFont = pygame.font.SysFont('comicsans', 25, True, False)
 
-#Rectangle Value
-rectY = 360
-
 #Hangman Buttons
 radius = 25
 buttons = []
-button_num = 0 
 A = 65 
 for i in range(13):
     x = 270 + i*60
@@ -35,13 +40,15 @@ for i in range(13):
     x = 270 + i*60
     y = 420
     buttons.append([x, y, chr(A + i + 13)])
-print(buttons)
+
 #game variable
-ram = 4
+ram = 0
 flowers = 0 
+difficulty = "normal"
 
 #timer variable for failscreen
-startTime = 10000000000000000000000000000000000000000000000000000000000000000000000000000000000
+
+startTime = 100000000000000000000000000000000000000000000
 
 #Questions and Words
 questions_list = ["A circuit board that contains all principle components of the computer", 
@@ -52,24 +59,26 @@ questions_list = ["A circuit board that contains all principle components of the
 "Short for malicious software, this word describes harmful    computer programs",
 "This Operating System was created in 1985 by Microsoft",
 "Released in 1984 by Apple, this computer was the first       successful PC that featured the GUI",
-"This Operating System first released in 1991 runs on all     Android phones",
-"The Operating System which macOS is based on was released in 1971"
+"This Operating System first released in 1991, is the basis   for all Android phones",
+"The Operating System which macOS is based on was released in 1971",
+"A type of malware that blocks access from user data until    money is paid to the hacker",
+"A type of malware that displays unwanted advertisements      on your computer"
 ]
-words_list = ["MOTHERBOARD", "CPU", "GPU", "RAM", "PSU", "MALWARE", "WINDOWS", "MACINTOSH", "LINUX", "UNIX"]
+words_list = ["MOTHERBOARD", "CPU", "GPU", "RAM", "PSU", "MALWARE", "WINDOWS", "MACINTOSH", "LINUX", "UNIX", "RANSOMEWARE", "ADWARE"]
 question_number = 0
 word_number = 0 
 guessedLetters = []
 winningCount = len(words_list)
 
-#draw ram variables
-ramX = 175
-ramY = 630
+
+
 #text
 textOne = titleFont.render("Computer RAM Man", True, WHITE)
 textTwo = font.render("Easy", True, WHITE)
 textThree = font.render("Hard", True, WHITE)
 textFour = font.render("Instructions", True, WHITE)
 #global variable
+
 clock = pygame.time.Clock()
 
 #setting up the screen size
@@ -77,26 +86,17 @@ screenSize = (1280, 720)
 screen = pygame.display.set_mode(screenSize)
 pygame.display.set_caption("Hardware Hangman")
 
-#Timer Variable
 
 #background images
-background = pygame.image.load("background1.png").convert()
-backgroundTwo = pygame.image.load("Windows.jpg").convert()
-backgroundThree = pygame.image.load("hardware.jpg").convert()
-backgroundThree = pygame.transform.scale(backgroundThree, (1280, 720))
 backgroundFour = pygame.image.load("background4.jpg").convert()
 backgroundFour = pygame.transform.scale(backgroundFour, (1280,720))
+
 # Game images
 starImage = pygame.image.load("star.png").convert()
 starImage = pygame.transform.scale(starImage, (80, 60))
 starImage.set_colorkey(BLACK)
-
-pcImage = pygame.image.load("PC.png").convert()
-pcImage = pygame.transform.scale(pcImage, (300,300))
 flowerImage = pygame.image.load("flower.png").convert()
 flowerImage.set_colorkey((32,31,30))
-menuImage = pygame.image.load("menu.jpg").convert()
-menuImage = pygame.transform.scale(menuImage, (200,200))
 gpuImage = pygame.image.load("GPU.png").convert()
 gpuImage.set_colorkey((32,31,30))
 gpuImage = pygame.transform.scale(gpuImage, (250, 370))
@@ -111,12 +111,20 @@ instructionsImage = pygame.transform.scale(instructionsImage, (864, 486))
 instructionsImage.set_colorkey((33,33,33))
 chipMunkImage = pygame.image.load("chipmunk.png").convert()
 chipMunkImage.set_colorkey((32,31,30))
-spiderImage = pygame.image.load("spider.png").convert()
-spiderImage.set_colorkey((32,31,30))
 humanImage = pygame.image.load("human.png").convert()
 humanImage.set_colorkey((32,31,30))
-treeImage = pygame.image.load('tree.png').convert()
-treeImage.set_colorkey((32,31,30))
+willowImage = pygame.image.load('willow.png').convert()
+willowImage.set_colorkey((4,16,15))
+willowImage = pygame.transform.scale(willowImage, (295, 398))
+tentImage = pygame.image.load('tent.png').convert()
+tentImage.set_colorkey((4,16,15))
+tentImage = pygame.transform.scale(tentImage, (375, 290))
+chipmunkTentImage = pygame.image.load('chipmunktent.png').convert()
+chipmunkTentImage.set_colorkey((4,16,15))
+chipmunkTentImage = pygame.transform.scale(chipmunkTentImage, (75, 85))
+afterwordImage = pygame.image.load("afterword.jpg").convert()
+afterwordImage.set_colorkey((33,33,33))
+
 class GameScene:
     def __init__(self):
         self.scene = "loading"
@@ -127,19 +135,24 @@ class GameScene:
         global word_number
         global question_number
         global flowers
-        global gussedLetters
+        global guessedLetters
+        global difficulty
+        
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
+
             # detects if user presses easy or hard and places them in their desired difficulty
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_x, mouse_y = pygame.mouse.get_pos()
                 press_easy = mouse_x > 427 and mouse_x < 854 and mouse_y > 360 and mouse_y < 410
                 press_hard = mouse_x > 427 and mouse_x < 854 and mouse_y > 450 and mouse_y < 500
                 press_instructions = mouse_x > 427 and mouse_x < 854 and mouse_y > 540 and mouse_y < 590
+                
                 # If user presses instruction button then loads the instructions scene
                 if press_instructions:
                     self.scene = "instructions"
+
                 # If user presses hard button then gives the user 4 sticks of ram
                 if press_easy:
                     self.scene = "maingame"
@@ -149,6 +162,8 @@ class GameScene:
                     flowers = 0
                     guessedLetters = []
                     winningCount = len(words_list)
+                    difficulty = "easy"
+
                 # If user presses hard button then gives the user 2 sticks of ram
                 if press_hard:
                     self.scene = "maingame"
@@ -158,6 +173,9 @@ class GameScene:
                     flowers = 0
                     guessedLetters = []
                     winningCount = len(words_list)
+                    difficulty = "hard"
+
+            # developer access to different scenes
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     self.scene = "failscreen"
@@ -175,7 +193,6 @@ class GameScene:
         for i in range(3):
             pygame.draw.rect(screen, GREY, (427, 360 + 90 * i, 427, 50))
             
-        
         screen.blit(textTwo, (600, 373))
         screen.blit(textThree, (600, 463))
         screen.blit(textFour, (530, 553))
@@ -206,7 +223,7 @@ class GameScene:
     # Main Game Scene
     def maingame(self):
 
-        #Use global variable
+        #Use global variables
         global question_number
         global word_number
         global ram
@@ -214,7 +231,7 @@ class GameScene:
         global guessedLetters
         global words_list
         global winningCount
-        
+        global difficulty 
         screen.fill(BLACK)
         
 
@@ -237,7 +254,7 @@ class GameScene:
             screen.blit(quesLineTwo, (300, 140))
 
         
-        #Prints the word that user is trying to guess
+        #prints onto the screen the word that user is trying to guess
         guessed_word = ""
         for letter in words_list[word_number]:
             if letter in guessedLetters:
@@ -245,7 +262,6 @@ class GameScene:
             else:
                 guessed_word += "_ "
             
-        
         text = font.render(guessed_word ,True , WHITE)
         lengthWord = 3
        
@@ -254,7 +270,7 @@ class GameScene:
             screen.blit(text, (590 - backWord * 12, 250))
 
 
-        #draw gpu and cpu ;)
+        # Draws images of a gpu and cpu 
         screen.blit(gpuImage, (0, 200))
         screen.blit(cpuImage, (1020, 260))
         
@@ -266,24 +282,20 @@ class GameScene:
             buttonletter = buttonFont.render(letter, True, WHITE)
             screen.blit(buttonletter, [x-6,y-8])
         
-
-        #Draws Questions left
-        
-        for x in range(10):
-            pygame.draw.rect(screen, GREY, (185 + x*90, 0, 90, 75), 2)
-            textQuestionNum = font.render(str(x+1), True, WHITE)
-            screen.blit(textQuestionNum, (220 + x * 90, 10))
-            pygame.draw.rect(screen, GREY, (185 + x*90, 65, 90, 10))
-        
         # Draws progress bar on top of screen
+        for x in range(12):
+            pygame.draw.rect(screen, GREY, (110 + x*90, 0, 90, 75), 2)
+            textQuestionNum = font.render(str(x+1), True, WHITE)
+            screen.blit(textQuestionNum, (145 + x * 90, 10))
+            pygame.draw.rect(screen, GREY, (110 + x*90, 65, 90, 10))
+        
         if word_number >= 1:
             for x in range(word_number):
-                pygame.draw.rect(screen, BLACK, (185 + x*90, 0, 90, 65))
-                pygame.draw.rect(screen, GREY, (185 + x*90, 0, 90, 75), 2)
-                screen.blit(starImage, (190 + x*90, 0, 90, 75))
-                pygame.draw.rect(screen, GREEN, (185 + x*90, 65, 90, 10))
+                pygame.draw.rect(screen, GREY, (110 + x*90, 0, 90, 75), 2)
+                screen.blit(starImage, (120 + x*90, 0, 90, 75))
+                pygame.draw.rect(screen, GREEN, (110 + x*90, 65, 90, 10))
         
-        pygame.draw.rect(screen, BLUE, (185 + word_number*90, 65, 90, 10))
+        pygame.draw.rect(screen, BLUE, (110 + word_number*90, 65, 90, 10))
 
         #Moves on to next word if the word is guessed correctly
         if guessed_word == words_list[word_number]:
@@ -293,17 +305,27 @@ class GameScene:
             guessedLetters = []
         
         #draw ram
+        
         for i in range(ram):
             ramImage = pygame.image.load("ram.jpg").convert()
             ramImage = pygame.transform.scale(ramImage, (270, 100))
             ramImage.set_colorkey(WHITE)
-            screen.blit(ramImage, (ramX + i * 225, ramY))
+            screen.blit(ramImage, (175 + i * 225, 630))
 
         #draw flowers
-        for i in range(flowers):
-            screen.blit(flowerImage, (800 - i * 225, 450))
-            
-            
+
+        if difficulty == "easy": 
+            for i in range(flowers):
+                screen.blit(flowerImage, (800 - i * 225, 450))
+        if difficulty == "hard":
+            for i in range(flowers):
+                screen.blit(flowerImage, (350 - i * 225, 450))
+
+        # draws "guess word button"
+        guessWordText = font.render("Guess Word", True, WHITE)
+        pygame.draw.rect(screen, GREY, (480, 185, 300, 40))
+        screen.blit(guessWordText, (520, 190))
+
         #If the user loses all his ram, changes to fail screen 
         if ram == 0:
             self.scene = "failscreen"
@@ -329,8 +351,18 @@ class GameScene:
                         if letter not in words_list[word_number]:
                             ram -= 1
                             flowers += 1
-            
-
+                if mouse_x < 780 and mouse_x > 480 and mouse_y > 185 and mouse_y < 225:
+                    fullGuess = input("Enter the full word you are guessing: ")
+                    fullGuess = fullGuess.upper()
+                    lettersFullGuess = ""
+                    if fullGuess != words_list[word_number]:
+                        self.scene = 'failscreen'
+                    if len(fullGuess) < len(words_list[word_number]) or len(fullGuess) > len(words_list[word_number]):
+                        self.scene = 'failscreen'
+                    for i in range(len(fullGuess)):
+                        lettersFullGuess = fullGuess[i]
+                        guessedLetters.append(lettersFullGuess)
+                        
             # Developer Access
             if event.type == pygame.KEYDOWN:
                 if event.type == pygame.K_o:
@@ -368,17 +400,16 @@ class GameScene:
                     startTime = pygame.time.get_ticks()
                     
 
-        
         # background image
         failImage = pygame.image.load("failscreen.jpg").convert()
         screen.blit(failImage, (0, 0))
         
-        # Restart Button
+        # Restart Button image
         pygame.draw.rect(screen, BLUE, (125, 376, 250, 60))
         text = font.render("Press to Restart", True, WHITE)
         screen.blit (text, (140, 410))
 
-        #Timer 
+        #Once the stopwatch is started calculates the seconds passed
         percentage = 0
         counter = 10
 
@@ -410,27 +441,35 @@ class GameScene:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
-            # Go back to titlescreen
+            # Go back to titlescreen or quit game
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_x, mouse_y = pygame.mouse.get_pos()
                 pressAgain = mouse_x > 74 and mouse_x < 426 and mouse_y > 599 and mouse_y < 651
                 pressExit = mouse_x > 849 and mouse_x < 1201 and mouse_y > 599 and mouse_y < 651
                 if pressAgain:
                     self.scene = "loading"
-                   
-
                 if pressExit:
                     pygame.quit()
 
-        #draw tree
-        screen.blit(treeImage, (160, 100))
+        #draw tree and tent and chipmunk
+
+        screen.blit(chipmunkTentImage, (637, 585))
+        screen.blit(tentImage, (450, 450))
+        screen.blit(willowImage, (150, 150))
+        screen.blit(willowImage, (0, 100))
+        screen.blit(willowImage, (-100, 250))
+        screen.blit(willowImage, (100, 350))
+        screen.blit(willowImage, (700, 250))
+        screen.blit(willowImage, (800, 100))
+        screen.blit(willowImage, (900, 350))
+        screen.blit(willowImage, (950, 150))
+        screen.blit(willowImage, (550, 160))
+        screen.blit(willowImage, (440, 80))
+        screen.blit(willowImage, (330, 100))
+        screen.blit(afterwordImage, (165, -40))
+
+        #draw congragulations text
         
-        #draw text "You won 10 times"
-        victoryText = titleFont.render("You WON!", True, WHITE)
-        for i in range(5):
-            screen.blit(victoryText, (80, 120 + i * 100))
-        for i in range(5):
-            screen.blit(victoryText, (875, 120 + i * 100))
         
         # draw buttons and button text
         pygame.draw.rect(screen, GREY, (75, 600, 350, 50))
@@ -469,7 +508,4 @@ while True:
             
         
         
-            
-
-
-         
+        
