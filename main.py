@@ -53,22 +53,35 @@ startTime = 100000000000000000000000000000000000000000000
 #Questions and Words
 questions_list = ["A circuit board that contains all principle components of the computer", 
 "The brain of the computer, it's performance is measured in   Ghz", 
-"A specialized processor used to accelerate the rendering of  graphics",
+"A  processor used to accelerate the rendering of graphics",
 "A form of computer memory that stores temporary data",
 "A hardware component that is used to supply power to the     computer",
-"Short for malicious software, this word describes harmful    computer programs",
+"Short for malicious software, this word describes harmful software ",
 "This Operating System was created in 1985 by Microsoft",
 "Released in 1984 by Apple, this computer was the first       successful PC that featured the GUI",
 "This Operating System first released in 1991, is the basis   for all Android phones",
 "The Operating System which macOS is based on was released in 1971",
 "A type of malware that blocks access from user data until    money is paid to the hacker",
-"A type of malware that displays unwanted advertisements      on your computer"
+"A type of malware that displays unwanted advertisements      on your computer",
+"An operating system that runs on all Apple Iphones",
+"The measurement defined as 1024 gigabytes",
+"The basic unit of measurement for computer storage",
+"The basic unit of measurement for CPU speed",
+"The monitor resolution that is 1920 x 1080 pixels",
+"A spreadsheet software that is part of the Microsoft Office  Suite",
+"A video editing software that is part of the Adobe Creative  Suite",
+"A long-term computer storage drive that is much faster than  the standard hard drive",
+"A type of virus that spies and tracks your online activity,  it may access your camera",
+"A type of virus that records the keystrokes that the user    inputs into the computer",
+"An operating system built by Google that is designed to      primarily run web applications",
+"A music/media player developed by Apple that is used         across their devices", " "
 ]
-words_list = ["MOTHERBOARD", "CPU", "GPU", "RAM", "PSU", "MALWARE", "WINDOWS", "MACINTOSH", "LINUX", "UNIX", "RANSOMEWARE", "ADWARE"]
+words_list = ["MOTHERBOARD", "CPU", "GPU", "RAM", "PSU", "MALWARE", "WINDOWS", "MACINTOSH", "LINUX", "UNIX", "RANSOMWARE", "ADWARE", "IOS", "TERABYTE", 
+"BYTE", "HERTZ", "HD", "EXCEL", "PREMIERE", "SSD", "SPYWARE", "KEYLOGGER", "CHROMEOS", "ITUNES", " "]
 question_number = 0
 word_number = 0 
 guessedLetters = []
-winningCount = len(words_list)
+winningCount = 0
 
 
 
@@ -137,6 +150,7 @@ class GameScene:
         global flowers
         global guessedLetters
         global difficulty
+        global winningCount
         
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -161,7 +175,7 @@ class GameScene:
                     question_number = 0
                     flowers = 0
                     guessedLetters = []
-                    winningCount = len(words_list)
+                    winningCount = 24
                     difficulty = "easy"
 
                 # If user presses hard button then gives the user 2 sticks of ram
@@ -172,7 +186,7 @@ class GameScene:
                     question_number = 0
                     flowers = 0
                     guessedLetters = []
-                    winningCount = len(words_list)
+                    winningCount = 24
                     difficulty = "hard"
 
             # developer access to different scenes
@@ -234,7 +248,8 @@ class GameScene:
         global difficulty 
         screen.fill(BLACK)
         
-
+        #If the user guesses all the words correctly, changes to victory screen
+       
         # draw home button
         screen.blit(homeImage, (-5,625))
 
@@ -252,7 +267,6 @@ class GameScene:
             quesLineTwo = font.render(questions_list[question_number][61:], True, WHITE)
             screen.blit(quesLineOne, (100, 110))
             screen.blit(quesLineTwo, (300, 140))
-
         
         #prints onto the screen the word that user is trying to guess
         guessed_word = ""
@@ -283,19 +297,37 @@ class GameScene:
             screen.blit(buttonletter, [x-6,y-8])
         
         # Draws progress bar on top of screen
-        for x in range(12):
-            pygame.draw.rect(screen, GREY, (110 + x*90, 0, 90, 75), 2)
-            textQuestionNum = font.render(str(x+1), True, WHITE)
-            screen.blit(textQuestionNum, (145 + x * 90, 10))
-            pygame.draw.rect(screen, GREY, (110 + x*90, 65, 90, 10))
-        
-        if word_number >= 1:
-            for x in range(word_number):
+        if question_number < 13:
+            for x in range(12):
                 pygame.draw.rect(screen, GREY, (110 + x*90, 0, 90, 75), 2)
-                screen.blit(starImage, (120 + x*90, 0, 90, 75))
-                pygame.draw.rect(screen, GREEN, (110 + x*90, 65, 90, 10))
+                textQuestionNum = font.render(str(x+1), True, WHITE)
+                screen.blit(textQuestionNum, (145 + x * 90, 10))
+                pygame.draw.rect(screen, GREY, (110 + x*90, 65, 90, 10))
         
-        pygame.draw.rect(screen, BLUE, (110 + word_number*90, 65, 90, 10))
+        if question_number > 12:
+            for x in range(12):
+                pygame.draw.rect(screen, GREY, (110 + x*90, 0, 90, 75), 2)
+                textQuestionNum = font.render(str(x+13), True, WHITE)
+                screen.blit(textQuestionNum, (145 + x*90, 10))
+                pygame.draw.rect(screen, GREY, (110 + x*90, 65, 90, 10))
+        
+        if question_number >= 1 and question_number < 13:
+            for x in range(question_number):
+                pygame.draw.rect(screen, BLACK, (110 + x*90, 0, 90, 75))
+                screen.blit(starImage, (113 + x*90, 0, 90, 75))
+                pygame.draw.rect(screen, GREEN, (110 + x * 90, 65, 90, 10))
+      
+        if question_number > 12:
+            for x in range(question_number-12):
+                pygame.draw.rect(screen, BLACK, (110 + x*90, 0, 90, 75))
+                screen.blit(starImage, (113 + x*90, 0, 90, 75))
+                pygame.draw.rect(screen, GREEN, (110 + x*90, 65, 90, 10))
+
+        if question_number < 12:
+            pygame.draw.rect(screen, BLUE, (110 + question_number*90, 65, 90, 10))
+        if question_number > 12:
+            pygame.draw.rect(screen, BLUE, (110 + (question_number-12)*90, 65, 90, 10))
+
 
         #Moves on to next word if the word is guessed correctly
         if guessed_word == words_list[word_number]:
@@ -330,9 +362,11 @@ class GameScene:
         if ram == 0:
             self.scene = "failscreen"
         
-        #If the user guesses all the words correctly, changes to victory screen
+        # detects if the user has answered all questions, and if they have enter the vicotry screen
+
         if winningCount == 0:
             self.scene = "victoryscreen"
+        
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -371,6 +405,7 @@ class GameScene:
                 if event.key == pygame.K_p:
                     word_number += 1
                     question_number += 1
+                    winningCount -= 1
                  
 
             # Developer Access
@@ -433,7 +468,6 @@ class GameScene:
     #victory screen
     def victoryscreen(self):
         global word_number
-        global question_number
         global winningCount
         global flowers
 
