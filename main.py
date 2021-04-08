@@ -97,7 +97,7 @@ clock = pygame.time.Clock()
 #setting up the screen size
 screenSize = (1280, 720)
 screen = pygame.display.set_mode(screenSize)
-pygame.display.set_caption("Hardware Hangman")
+pygame.display.set_caption("Computer RAM Man")
 
 
 #background images
