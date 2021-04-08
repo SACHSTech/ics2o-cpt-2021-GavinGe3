@@ -139,6 +139,9 @@ afterwordImage = pygame.image.load("afterword.jpg").convert()
 afterwordImage.set_colorkey((33,33,33))
 
 class GameScene:
+    # def an attribute for this class called scene, which is by default set to "loading", this attribute will be used late on in a class method to run whichever scene this 
+    # attribute is set to 
+    
     def __init__(self):
         self.scene = "loading"
 
@@ -216,7 +219,7 @@ class GameScene:
     #instructions scene
     def instructions(self):
         
-        # Draw instructions and game developer images
+        # Draw instructions, game developer and homebutton images
         screen.fill(BLACK)
         
         screen.blit(humanImage, (100, 325))
@@ -297,12 +300,16 @@ class GameScene:
             screen.blit(buttonletter, [x-6,y-8])
         
         # Draws progress bar on top of screen
+
+        # draws the first 12 questions
         if question_number < 13:
             for x in range(12):
                 pygame.draw.rect(screen, GREY, (110 + x*90, 0, 90, 75), 2)
                 textQuestionNum = font.render(str(x+1), True, WHITE)
                 screen.blit(textQuestionNum, (145 + x * 90, 10))
                 pygame.draw.rect(screen, GREY, (110 + x*90, 65, 90, 10))
+        
+        # draws the last 12 questions
         if question_number > 12:
             for x in range(12):
                 pygame.draw.rect(screen, GREY, (110 + x*90, 0, 90, 75), 2)
@@ -310,18 +317,21 @@ class GameScene:
                 screen.blit(textQuestionNum, (145 + x*90, 10))
                 pygame.draw.rect(screen, GREY, (110 + x*90, 65, 90, 10))
         
+        # draws stars for completed questions of 1 to 12
         if question_number >= 1 and question_number < 13:
             for x in range(question_number):
                 pygame.draw.rect(screen, BLACK, (110 + x*90, 0, 90, 75))
                 screen.blit(starImage, (113 + x*90, 0, 90, 75))
                 pygame.draw.rect(screen, GREEN, (110 + x * 90, 65, 90, 10))
       
+        # draws stars for completed questions of 13 to 24
         if question_number > 12:
             for x in range(question_number-12):
                 pygame.draw.rect(screen, BLACK, (110 + x*90, 0, 90, 75))
                 screen.blit(starImage, (113 + x*90, 0, 90, 75))
                 pygame.draw.rect(screen, GREEN, (110 + x*90, 65, 90, 10))
 
+        # draws a blue rectangle signifying the current question the player is on
         if question_number < 12:
             pygame.draw.rect(screen, BLUE, (110 + question_number*90, 65, 90, 10))
         if question_number > 12:
@@ -336,7 +346,6 @@ class GameScene:
             guessedLetters = []
         
         #draw ram
-        
         for i in range(ram):
             ramImage = pygame.image.load("ram.jpg").convert()
             ramImage = pygame.transform.scale(ramImage, (270, 100))
@@ -344,7 +353,6 @@ class GameScene:
             screen.blit(ramImage, (175 + i * 225, 630))
 
         #draw flowers
-
         if difficulty == "easy": 
             for i in range(flowers):
                 screen.blit(flowerImage, (800 - i * 225, 450))
@@ -352,7 +360,7 @@ class GameScene:
             for i in range(flowers):
                 screen.blit(flowerImage, (350 - i * 225, 450))
 
-        # draws "guess word button"
+        # draws "guess word" button
         guessWordText = font.render("Guess Word", True, WHITE)
         pygame.draw.rect(screen, GREY, (480, 185, 300, 40))
         screen.blit(guessWordText, (520, 190))
@@ -385,6 +393,7 @@ class GameScene:
                             ram -= 1
                             flowers += 1
                 
+                # Detects if the user presses the "guessword" button, and if they have allows them to enter their full word guess into the terminal
                 if mouse_x < 780 and mouse_x > 480 and mouse_y > 185 and mouse_y < 225:
                     fullGuess = input("Enter the full word you are guessing: ")
                     fullGuess = fullGuess.upper()
@@ -406,8 +415,6 @@ class GameScene:
                     word_number += 1
                     question_number += 1
                     winningCount -= 1
-                 
-
             # Developer Access
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
@@ -444,7 +451,7 @@ class GameScene:
         text = font.render("Press to Restart", True, WHITE)
         screen.blit (text, (140, 410))
 
-        #Once the stopwatch is started calculates the seconds passed
+        #Once the stopwatch is started calculates the seconds passed and percentage of restart
         percentage = 0
         counter = 10
 
@@ -462,20 +469,22 @@ class GameScene:
         if counter < 0 and counter > -1:
             self.scene = "loading"
 
-        
+        # Loads everything onto screen 
         pygame.display.flip()
 
-    #victory screen
+    #victory screen scene 
     def victoryscreen(self):
         global word_number
         global winningCount
         global flowers
 
+        # fills background with black 
         screen.fill(BLACK)
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
-            # Go back to titlescreen or quit game
+            # Go back to titlescreen or quit game depending on which button the user presses 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_x, mouse_y = pygame.mouse.get_pos()
                 pressAgain = mouse_x > 74 and mouse_x < 426 and mouse_y > 599 and mouse_y < 651
@@ -485,7 +494,7 @@ class GameScene:
                 if pressExit:
                     pygame.quit()
 
-        #draw tree and tent and chipmunk
+        #draw developer message, trees, tent and chipmunk
 
         screen.blit(chipmunkTentImage, (637, 585))
         screen.blit(tentImage, (450, 450))
@@ -502,9 +511,7 @@ class GameScene:
         screen.blit(willowImage, (330, 100))
         screen.blit(afterwordImage, (165, -40))
 
-        #draw congragulations text
-        
-        
+    
         # draw buttons and button text
         pygame.draw.rect(screen, GREY, (75, 600, 350, 50))
         pygame.draw.rect(screen, GREY, (850, 600, 350, 50))
@@ -513,10 +520,11 @@ class GameScene:
         screen.blit(playAgain, (150, 610))
         screen.blit(exitText, (985, 610))
 
+        # loads images onto the screen 
         pygame.display.flip()
     
 
-    # class method for updating game scene
+    # class method for updating game scene, if the attribute scene is set to the scene, runs the scene
     def update(self): 
         if self.scene == "loading":
             self.loading()
@@ -528,12 +536,13 @@ class GameScene:
             self.failscreen()
         if self.scene == "victoryscreen":
             self.victoryscreen()
-        
+
+# defines an object using the class we created called game
 game = GameScene()
 
 # Game Loop
 while True:
-    #developer access
+    # runs the method in the object game "update", which runs whichever gamescene the player is on (set to loading screen by default)
     game.update()
     clock.tick(60)
     
