@@ -41,7 +41,7 @@ for i in range(13):
     y = 420
     buttons.append([x, y, chr(A + i + 13)])
 
-#game variable
+#games variable
 ram = 0
 flowers = 0 
 difficulty = "normal"
@@ -56,7 +56,7 @@ questions_list = ["A circuit board that contains all principle components of the
 "A  processor used to accelerate the rendering of graphics",
 "A form of computer memory that stores temporary data",
 "A hardware component that is used to supply power to the     computer",
-"Short for malicious software, this word describes harmful software ",
+"Short for malicious software, this word describes harmful    software ",
 "This Operating System was created in 1985 by Microsoft",
 "Released in 1984 by Apple, this computer was the first       successful PC that featured the GUI",
 "This Operating System first released in 1991, is the basis   for all Android phones",
@@ -90,7 +90,7 @@ textOne = titleFont.render("Computer RAM Man", True, WHITE)
 textTwo = font.render("Easy", True, WHITE)
 textThree = font.render("Hard", True, WHITE)
 textFour = font.render("Instructions", True, WHITE)
-#global variable
+#clock variable
 
 clock = pygame.time.Clock()
 
@@ -277,7 +277,7 @@ class GameScene:
                 guessed_word += "_ "
             
         text = font.render(guessed_word ,True , WHITE)
-        lengthWord = 3
+        lengthWord = 2
        
         if len(words_list[word_number]) >= lengthWord:
             backWord = len(words_list[word_number]) - lengthWord
@@ -303,7 +303,6 @@ class GameScene:
                 textQuestionNum = font.render(str(x+1), True, WHITE)
                 screen.blit(textQuestionNum, (145 + x * 90, 10))
                 pygame.draw.rect(screen, GREY, (110 + x*90, 65, 90, 10))
-        
         if question_number > 12:
             for x in range(12):
                 pygame.draw.rect(screen, GREY, (110 + x*90, 0, 90, 75), 2)
@@ -385,6 +384,7 @@ class GameScene:
                         if letter not in words_list[word_number]:
                             ram -= 1
                             flowers += 1
+                
                 if mouse_x < 780 and mouse_x > 480 and mouse_y > 185 and mouse_y < 225:
                     fullGuess = input("Enter the full word you are guessing: ")
                     fullGuess = fullGuess.upper()
@@ -529,13 +529,12 @@ class GameScene:
         if self.scene == "victoryscreen":
             self.victoryscreen()
         
-game_scene = GameScene()
+game = GameScene()
 
-#timer variable
-
+# Game Loop
 while True:
     #developer access
-    game_scene.update()
+    game.update()
     clock.tick(60)
     
         
