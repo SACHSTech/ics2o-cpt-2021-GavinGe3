@@ -141,7 +141,6 @@ chipmunkTentImage = pygame.transform.scale(chipmunkTentImage, (75, 85))
 afterwordImage = pygame.image.load("afterword.jpg").convert()
 afterwordImage.set_colorkey((33,33,33))
 
-
 # class called gamescene which has multiple methods containing code that runs the entire game
 class GameScene:
     
@@ -205,7 +204,6 @@ class GameScene:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_TAB:
                     self.scene = "victoryscreen"
-
 
         #draw background
         screen.blit(backgroundFour, (0, 0))
@@ -524,7 +522,6 @@ class GameScene:
         screen.blit(willowImage, (330, 100))
         screen.blit(afterwordImage, (165, -40))
 
-    
         # draw buttons and button text
         pygame.draw.rect(screen, GREY, (75, 600, 350, 50))
         pygame.draw.rect(screen, GREY, (850, 600, 350, 50))
@@ -535,7 +532,6 @@ class GameScene:
 
         # loads images onto the screen 
         pygame.display.flip()
-    
 
     # class method for updating game scene, if the attribute scene is set to the scene, runs the scene
     def update(self): 
