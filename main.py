@@ -173,9 +173,9 @@ class GameScene:
                 
                 # If user presses instruction button then loads the instructions scene
                 if press_instructions:
-                    self.scene = R"instructions"
+                    self.scene = "instructions"
 
-                # If user presses hard button then gives the user 4 sticks of ram
+                # If user presses hard button then gives the user 4 sticks of ram, and resets all game variables
                 if press_easy:
                     self.scene = "maingame"
                     ram = 4
@@ -186,7 +186,7 @@ class GameScene:
                     winningCount = 24
                     difficulty = "easy"
 
-                # If user presses hard button then gives the user 2 sticks of ram
+                # If user presses hard button then gives the user 2 sticks of ram, and resets all game variables
                 if press_hard:
                     self.scene = "maingame"
                     ram = 2
@@ -291,8 +291,8 @@ class GameScene:
        
         # determines where on the screen to print the answer word depending on its length 
         if len(words_list[word_number]) >= lengthWord:
-            backWord = len(words_list[word_number]) - lengthWord
-            screen.blit(guessedText, (590 - backWord * 12, 250))
+            backSpaceWord = len(words_list[word_number]) - lengthWord
+            screen.blit(guessedText, (590 - backSpaceWord * 12, 250))
 
         # Draws images of a gpu and cpu 
         screen.blit(gpuImage, (0, 200))
@@ -398,6 +398,7 @@ class GameScene:
                     distanceFromButton = math.sqrt((x - mouse_x)**2 + (y - mouse_y)**2)
                     if distanceFromButton < radius:
                         guessedLetters.append(letter)
+
                         # if guessed letter is not in the word, removes one life/RAM from the player and adds a flower
                         if letter not in words_list[word_number]:
                             ram -= 1
@@ -440,19 +441,15 @@ class GameScene:
     # failscreen scene
     def failscreen(self):
 
-        #use these global varibles 
+        #use these global variables 
         global startTime
-        global word_number
-        global question_number
-        global flowers
-        global guessedLetters
         
         # Allows user to quit game
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
 
-            #detects button press and starts a stopwatch
+            #detects button press and stores the current time 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_x, mouse_y = pygame.mouse.get_pos()
                 if mouse_x > 126 and mouse_x < 376 and mouse_y > 377 and mouse_y < 437:
@@ -467,14 +464,14 @@ class GameScene:
         text = font.render("Press to Restart", True, WHITE)
         screen.blit (text, (140, 410))
 
-        #Once the stopwatch is started calculates the seconds passed and percentage of restart
-        percentage = 0
+        # calculates the seconds passed since the user has pressed the restart button 
         counter = 10
         secondsPassed = (pygame.time.get_ticks() - startTime) / 1000
-        percentage += secondsPassed * 10 // 1
         counter -= secondsPassed
 
         # prints the percentage of the restart process
+        percentage = 0
+        percentage += secondsPassed * 10 // 1
         textPercentage = font.render((str(percentage) + "% complete"), True, WHITE)
         if percentage > 0 and percentage < 101: 
             pygame.draw.rect(screen, BLUE, (125, 376, 300, 60))
@@ -489,16 +486,15 @@ class GameScene:
 
     #victory screen scene 
     def victoryscreen(self):
-        global word_number
-        global winningCount
-        global flowers
-
+        
         # fills background with black 
         screen.fill(BLACK)
-
+        
+        # allows user to quit
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
+            
             # Go back to titlescreen or quit game depending on which button the user presses 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_x, mouse_y = pygame.mouse.get_pos()
@@ -536,7 +532,7 @@ class GameScene:
         # loads images onto the screen 
         pygame.display.flip()
 
-    # class method for updating game scene, if the attribute scene is set to the scene, runs the scene
+    # class method for updating game scene, if the attribute scene is set to a certain scene, runs the scene
     def update(self): 
         if self.scene == "loading":
             self.loading()
@@ -549,7 +545,7 @@ class GameScene:
         if self.scene == "victoryscreen":
             self.victoryscreen()
 
-# defines an object using the class we created called game
+# defines an object using the class Gamescene we created called game
 game = GameScene()
 
 # Game Loop
