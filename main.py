@@ -173,7 +173,7 @@ class GameScene:
                 
                 # If user presses instruction button then loads the instructions scene
                 if press_instructions:
-                    self.scene = "instructions"
+                    self.scene = R"instructions"
 
                 # If user presses hard button then gives the user 4 sticks of ram
                 if press_easy:
@@ -213,11 +213,12 @@ class GameScene:
 
         for i in range(3):
             pygame.draw.rect(screen, GREY, (427, 360 + 90 * i, 427, 50))
-            
+
         screen.blit(textTwo, (600, 373))
         screen.blit(textThree, (600, 463))
         screen.blit(textFour, (530, 553))
         
+        # Load images
         pygame.display.flip()
     
     #instructions scene
@@ -407,11 +408,13 @@ class GameScene:
                     fullGuess = input("Enter the full word you are guessing: ")
                     fullGuess = fullGuess.upper()
                     lettersFullGuess = ""
+
                     # if full word guess is wrong, player is sent to failscreen
                     if fullGuess != words_list[word_number]:
                         self.scene = 'failscreen'
                     if len(fullGuess) < len(words_list[word_number]) or len(fullGuess) > len(words_list[word_number]):
                         self.scene = 'failscreen'
+
                     # appends the users guess into the guessed letters list 
                     for i in range(len(fullGuess)):
                         lettersFullGuess = fullGuess[i]
@@ -426,6 +429,7 @@ class GameScene:
                     word_number += 1
                     question_number += 1
                     winningCount -= 1
+            
             # Developer Access
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
@@ -435,6 +439,7 @@ class GameScene:
 
     # failscreen scene
     def failscreen(self):
+
         #use these global varibles 
         global startTime
         global word_number
@@ -442,7 +447,7 @@ class GameScene:
         global flowers
         global guessedLetters
         
-        
+        # Allows user to quit game
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -453,7 +458,6 @@ class GameScene:
                 if mouse_x > 126 and mouse_x < 376 and mouse_y > 377 and mouse_y < 437:
                     startTime = pygame.time.get_ticks()
                     
-
         # background image
         failImage = pygame.image.load("failscreen.jpg").convert()
         screen.blit(failImage, (0, 0))
@@ -466,7 +470,6 @@ class GameScene:
         #Once the stopwatch is started calculates the seconds passed and percentage of restart
         percentage = 0
         counter = 10
-
         secondsPassed = (pygame.time.get_ticks() - startTime) / 1000
         percentage += secondsPassed * 10 // 1
         counter -= secondsPassed
